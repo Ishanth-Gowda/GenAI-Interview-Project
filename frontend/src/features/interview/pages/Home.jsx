@@ -6,7 +6,7 @@ import '../styles/home.scss'
 
 const Home = () => {
 
-    const { loading, error, generateReport, reports } = useInterview()
+    const { loading, error, generateReport, reports = [] } = useInterview()
     const { loading: authLoading, handleLogout } = useAuth()
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
