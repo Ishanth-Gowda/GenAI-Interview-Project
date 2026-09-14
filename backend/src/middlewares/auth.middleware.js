@@ -4,7 +4,10 @@ require('dotenv').config();
 const blacklistTokenModel = require('../models/blacklist.model')
 
 const checkForUser = async (req, res, next) => {
-    const token = req.cookies.token;
+    const authorization = req.headers.authorization;
+    const token = req.cookies.token || (authorization?.startsWith('Bearer ')
+        ? authorization.slice(7)
+        : null);
     if (!token) {
         return res.status(401).json({
             message: 'Token not found, please login again'

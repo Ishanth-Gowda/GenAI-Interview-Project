@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs'); // import bcryptjs module for password hashi
 const jwt = require('jsonwebtoken'); // import jsonwebtoken module for generating JWT tokens
 
 const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').trim();
-const isCrossSite = !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(frontendUrl);
+const isRenderProduction = Boolean(process.env.RENDER || process.env.RENDER_SERVICE_ID);
+const isCrossSite = isRenderProduction || !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(frontendUrl);
 const cookieOptions = {
     httpOnly: true,
     secure: isCrossSite,
@@ -48,6 +49,7 @@ const RegisterUser = async (req, res) => {
     res.cookie('token', token, cookieOptions) // set the generated JWT token as a cookie in the response. This allows the client to store the token and send it with subsequent requests for authentication.
     res.status(201).json({
         message: 'User registered successfully',
+        token,
         user: {
             id: newUser._id,
             username: newUser.username,
@@ -86,6 +88,7 @@ const LoginUser = async (req, res) => {
     res.cookie('token', token, cookieOptions) // set the generated JWT token as a cookie in the response. This allows the client to store the token and send it with subsequent requests for authentication.
     res.status(200).json({
         message: 'User logged in successfully',
+        token,
         user: {
             id: userExists._id,
             username: userExists.username,

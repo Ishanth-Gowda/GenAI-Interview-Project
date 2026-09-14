@@ -7,7 +7,7 @@ app.use(express.json()); // middleware to parse JSON request bodies
 app.use(cookieParser()); // middleware to parse cookies from incoming requests
 // parse meaning is to convert the incoming data into a format that can be easily used by the application. In this case, express.json() middleware parses the incoming JSON request bodies and makes it available in req.body, and cookieParser() middleware parses the cookies from incoming requests and makes them available in req.cookies.
 
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173,https://gen-ai-interview-project-eta.vercel.app")
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean)
@@ -20,7 +20,8 @@ app.use(cors({
 
         return callback(new Error('Origin is not allowed by CORS'))
     },
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
 const authRoutes = require('./routes/auth.routes'); // import authentication routes file
