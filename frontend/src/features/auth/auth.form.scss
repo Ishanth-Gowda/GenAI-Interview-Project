@@ -144,6 +144,17 @@ $auth-accent: #ad75b7;
     gap: 0.45rem;
 }
 
+.auth-error {
+    margin: 0;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid rgba(#f08b9d, 0.35);
+    border-radius: 0.35rem;
+    background: rgba(#f08b9d, 0.08);
+    color: #f08b9d;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
 .auth-page label {
     color: #eee9f0;
     font-size: 0.78rem;

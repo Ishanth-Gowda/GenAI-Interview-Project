@@ -11,11 +11,17 @@ const Login = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
 
     const handleSubmit = async (e) => {
         e.preventDefault() // prevent the default form submission behavior, which would cause a page reload. Instead, we want to handle the form submission using JavaScript.
-        await handleLogin({ email, password })
-        navigate('/home')
+        setError("")
+        try {
+            await handleLogin({ email, password })
+            navigate('/home')
+        } catch (error) {
+            setError(error.response?.data?.message || "Unable to log in. Please check your email and password.")
+        }
     }
 
     if (loading) {
@@ -43,6 +49,8 @@ const Login = () => {
                             <label htmlFor="password">Password:</label>
                             <input onChange={(e) => { setPassword(e.target.value) }} type="password" id='password' name='password' placeholder='Enter password' />
                         </div>
+
+                        {error && <p className='auth-error' role='alert'>{error}</p>}
 
                         <button className='button primary-btn'>Login</button>
                     </form>
