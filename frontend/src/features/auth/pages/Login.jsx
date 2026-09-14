@@ -19,7 +19,7 @@ const Login = () => {
     }
 
     if (loading) {
-        return (<main className='auth-page loading-screen'><div className='loading-content'><span className='loading-spinner' /><h1>Signing you in...</h1></div></main>)
+        return (<main className='auth-page loading-screen'><div className='loading-content'><span className='loading-spinner' /><h1>Loading...</h1></div></main>)
     }
 
     return (
