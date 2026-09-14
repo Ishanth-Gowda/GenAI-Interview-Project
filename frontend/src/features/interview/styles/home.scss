@@ -445,17 +445,27 @@ textarea::placeholder { color: #777783; }
 .loading-screen { min-height: 100vh; display: grid; place-items: center; background: #1c1e2a; color: $accent; }
 
 @media (max-width: 650px) {
-    .home-page { padding-top: 1.75rem; }
-    .page-header p { font-size: 0.75rem; }
-    .home-logout { position: static; margin-bottom: 1rem; }
+    .home-page { padding: 1.25rem 0.85rem 1.5rem; }
+    .page-header { margin-bottom: 1.35rem; }
+    .page-header h1 { padding-right: 0; font-size: clamp(1.55rem, 7vw, 2rem); }
+    .page-header p { max-width: 32rem; font-size: 0.75rem; }
+    .home-logout { position: static; margin-bottom: 0.9rem; }
     .interview-card__body { grid-template-columns: 1fr; }
     .panel-divider { height: 1px; }
-    .panel__textarea { height: 14rem; }
-    .interview-card__footer { align-items: center; flex-direction: column; gap: 0.75rem; }
-    .generate-btn { justify-content: center; }
+    .panel { padding: 1.25rem 1rem; }
+    .panel__textarea { height: 13rem; }
+    .panel__textarea--short { height: 7.5rem; min-height: 7.5rem; }
+    .interview-card__footer { padding: 0.85rem 1rem; }
+    .generate-btn { width: 100%; justify-content: center; }
     .reports-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .recent-reports { margin-top: 1.75rem; }
+    .page-footer { flex-wrap: wrap; gap: 0.7rem 1rem; }
 }
 
 @media (max-width: 420px) {
+    .page-header h1 { font-size: 1.55rem; }
+    .panel__header { align-items: flex-start; }
+    .panel__header h2 { line-height: 1.35; }
+    .badge { line-height: 1.35; text-align: right; }
     .reports-list { grid-template-columns: 1fr; }
 }
