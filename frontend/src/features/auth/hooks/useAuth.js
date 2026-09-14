@@ -17,7 +17,8 @@ export const useAuth = () => {
             setUser(data.user)
         }
         catch (error) {
-
+            setUser(null)
+            throw error
         }
         finally {
             isLoading(false)
@@ -32,7 +33,8 @@ export const useAuth = () => {
             setUser(data.user)
         }
         catch (error) {
-
+            setUser(null)
+            throw error
         }
         finally {
             isLoading(false)
@@ -42,11 +44,11 @@ export const useAuth = () => {
     const handleLogout = async () => {
         isLoading(true)
         try {
-            const data = await logout()
+            await logout()
             setUser(null)
         }
-        catch (error) {
-
+        catch {
+            setUser(null)
         }
         finally {
             isLoading(false)
@@ -59,7 +61,7 @@ export const useAuth = () => {
                 const data = await getUserDetails()
                 setUser(data.user)
             }
-            catch (error) {
+            catch {
                 setUser(null)
             }
             finally {

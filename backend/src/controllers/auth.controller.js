@@ -3,10 +3,12 @@ const blacklistTokenModel = require('../models/blacklist.model'); // import blac
 const bcrypt = require('bcryptjs'); // import bcryptjs module for password hashing
 const jwt = require('jsonwebtoken'); // import jsonwebtoken module for generating JWT tokens
 
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+const isCrossSite = !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(frontendUrl);
 const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: isCrossSite,
+    sameSite: isCrossSite ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000
 }
 

@@ -7,29 +7,19 @@ const api = axios.create({
 }) // here we are creating an instance of axios with a base URL and withCredentials set to true. This means that all requests made using this instance will have the base URL prepended to the request URL and will include credentials (like cookies) in the request.
 
 export const register = async ({ username, email, password }) => {
-    try {
-        const response = await api.post('/api/auth/register', {
-            username, email, password
-        })
+    const response = await api.post('/api/auth/register', {
+        username, email, password
+    })
 
-        return response.data
-    }
-    catch (error) {
-        console.log(error)
-    }
+    return response.data
 }
 
 export const login = async ({ email, password }) => {
-    try {
-        const response = await api.post('/api/auth/login', {
-            email, password
-        })
+    const response = await api.post('/api/auth/login', {
+        email, password
+    })
 
-        return response.data
-    }
-    catch (error) {
-        console.log(error)
-    }
+    return response.data
 }
 
 export const logout = async () => {
