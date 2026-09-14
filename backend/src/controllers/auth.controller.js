@@ -3,7 +3,7 @@ const blacklistTokenModel = require('../models/blacklist.model'); // import blac
 const bcrypt = require('bcryptjs'); // import bcryptjs module for password hashing
 const jwt = require('jsonwebtoken'); // import jsonwebtoken module for generating JWT tokens
 
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').trim();
 const isCrossSite = !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(frontendUrl);
 const cookieOptions = {
     httpOnly: true,
