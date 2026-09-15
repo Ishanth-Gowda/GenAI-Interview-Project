@@ -51,7 +51,7 @@ const generateInterviewReport = async ({ resume, selfDescription, jobDescription
     delete responseSchema.$schema
 
     const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-3.8-flash",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
@@ -103,7 +103,7 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                     `
 
     const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-3.8-flash",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
