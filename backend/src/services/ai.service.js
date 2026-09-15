@@ -1,11 +1,48 @@
 const { GoogleGenAI } = require('@google/genai')
 const z = require('zod')
-const { zodToJsonSchema } = require("zod-to-json-schema")
 const puppeteer = require("puppeteer")
 
 const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENAI_API_KEY
 })
+
+// Ordered from most to least preferred. If a model keeps failing with a transient
+// error, we fall back to the next one instead of failing the whole request.
+const MODEL_FALLBACK_CHAIN = ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"]
+
+/**
+ * Wraps ai.models.generateContent with retry-with-backoff per model, and falls
+ * back to the next model in MODEL_FALLBACK_CHAIN once a model's retries are exhausted.
+ * Only retries on transient errors (503 high-demand / 429 rate-limit) - anything else
+ * (bad schema, auth failure, etc.) is thrown immediately so it isn't retried pointlessly.
+ */
+async function generateContentWithRetry({ contents, config }, { maxRetriesPerModel = 3, initialDelayMs = 1000 } = {}) {
+    let lastError
+
+    for (const model of MODEL_FALLBACK_CHAIN) {
+        for (let attempt = 0; attempt < maxRetriesPerModel; attempt++) {
+            try {
+                return await ai.models.generateContent({ model, contents, config })
+            } catch (err) {
+                lastError = err
+
+                const status = err?.status || err?.code
+                const isTransient = status === 503 || status === 429 || /high demand|overloaded/i.test(err?.message || "")
+
+                if (!isTransient) {
+                    throw err
+                }
+
+                const delay = initialDelayMs * Math.pow(2, attempt)
+                console.warn(`[Gemini] ${model} attempt ${attempt + 1} failed (${status}). Retrying in ${delay}ms...`)
+                await new Promise((res) => setTimeout(res, delay))
+            }
+        }
+        console.warn(`[Gemini] Exhausted retries on ${model}, falling back to next model...`)
+    }
+
+    throw lastError
+}
 
 const interviewReportSchema = z.object({
     matchScore: z.number().min(0).max(100).describe("A score between 0 and 100 indicating how well the candidate's profile matches the job describe "),
@@ -36,7 +73,7 @@ const interviewReportSchema = z.object({
     title: z.string().describe("The title of the job for which the interview report is generated")
 })
 // this above schema is different from the schema in database, this schema is used to tell to the AI what all is required and in what format.
-// The schema is defined using zod library, which is a TypeScript-first schema declaration and validation library. The zodToJsonSchema function is used to convert the zod schema to JSON schema, which can be used to validate the input data in the API request.
+// The schema is defined using zod library, which is a TypeScript-first schema declaration and validation library. z.toJSONSchema converts the zod schema to JSON schema, which Gemini uses to constrain its response format.
 
 const generateInterviewReport = async ({ resume, selfDescription, jobDescription }) => {
 
@@ -50,8 +87,7 @@ const generateInterviewReport = async ({ resume, selfDescription, jobDescription
     const responseSchema = z.toJSONSchema(interviewReportSchema)
     delete responseSchema.$schema
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
+    const response = await generateContentWithRetry({
         contents: prompt,
         config: {
             responseMimeType: "application/json",
@@ -102,15 +138,16 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                         The resume should not be so lengthy, it should ideally be 1-2 pages long when converted to PDF. Focus on quality rather than quantity and make sure to include all the relevant information that can increase the candidate's chances of getting an interview call for the given job description.
                     `
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
+    const responseSchema = z.toJSONSchema(resumePdfSchema)
+    delete responseSchema.$schema
+
+    const response = await generateContentWithRetry({
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(resumePdfSchema),
+            responseSchema
         }
     })
-
 
     const jsonContent = JSON.parse(response.text)
 
