@@ -9,8 +9,9 @@ const getAuthToken = () => localStorage.getItem('authToken')
 
 const api = axios.create({
     baseURL: apiBaseUrl,
-    withCredentials: true
-}) // here we are creating an instance of axios with a base URL and withCredentials set to true. This means that all requests made using this instance will have the base URL prepended to the request URL and will include credentials (like cookies) in the request.
+    withCredentials: true,
+    timeout: 8000
+}) // here we are creating an instance of axios with a base URL, credentials, and a timeout to prevent requests from stalling the app for too long.
 
 api.interceptors.request.use((config) => {
     const token = getAuthToken()

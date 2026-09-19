@@ -1,11 +1,12 @@
 import { createContext, useState } from 'react'
 
+const hasAuthToken = () => Boolean(localStorage.getItem('authToken'))
+
 export const authContext = createContext()
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
-    const [loading, isLoading] = useState(true)
-
+    const [loading, isLoading] = useState(hasAuthToken())
 
     return (
         <authContext.Provider value={{ user, setUser, loading, isLoading }}>

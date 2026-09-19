@@ -56,10 +56,18 @@ export const useAuth = () => {
     }
 
     useEffect(() => {
+        const token = localStorage.getItem('authToken')
+
+        if (!token) {
+            setUser(null)
+            isLoading(false)
+            return
+        }
+
         const getAndSetUser = async () => {
             try {
                 const data = await getUserDetails()
-                setUser(data.user)
+                setUser(data?.user ?? null)
             }
             catch {
                 setUser(null)
